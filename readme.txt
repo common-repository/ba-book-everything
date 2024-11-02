@@ -4,7 +4,7 @@ Tags: booking, tours, rental, apartments, properties
 Requires at least: 6.0
 Requires PHP: 8.1
 Tested up to: 6.6.2
-Stable tag: 1.7.11
+Stable tag: 1.7.12
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -113,6 +113,10 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 1. [Send us a request](https://ba-booking.com/)
 
 == Changelog ==
+
+= 1.7.12 =
+* Added hooks to filter the order confirmation pages content
+* Fixed minor issues
 
 = 1.7.11 =
 * Prevent payment gateway fees from being added to the checkout page in manual confirmation mode until the order is confirmed by the administrator

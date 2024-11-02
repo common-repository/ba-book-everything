@@ -1977,7 +1977,8 @@ class BABE_html {
         $min_guests_string = (string)get_post_meta($post_id, 'min_guests', true);
         $min_guests = $min_guests_string === '0' ? 0 : max(absint( $min_guests_string ),1);
 
-        $guests_max = min($max_guests, BABE_Settings::$settings['max_guests_select']);
+        $guests_max = (int)BABE_Settings::$settings['max_guests_select'] > 0
+            ? min($max_guests, BABE_Settings::$settings['max_guests_select']) : $max_guests;
         $guests_min = max(0, $min_guests);
 
         $ages = BABE_Post_types::get_ages_arr();
@@ -3092,12 +3093,21 @@ class BABE_html {
             $output .= '</form>';
         }
 
-        $output .= '<p>'.__( 'Order #', 'ba-book-everything' ).$args['order_num'].'</p>';
+        $order_details = [
+            'order_num' => '<p>'.sprintf(__('Order #%s', 'ba-book-everything'), $args['order_num']).'</p>',
+            'order_items' => self::order_items($args['order_id']),
+            'order_customer_details' => self::order_customer_details($args['order_id']),
+        ];
 
-        $output .= BABE_html::order_items($args['order_id']);
-        $output .= BABE_html::order_customer_details($args['order_id']);
-        
-        return $output; 
+        $order_details = apply_filters('babe_admin_confirm_content_order_details', $order_details, $args);
+
+        if ( !empty($order_details) ){
+            $output .= implode('', $order_details);
+        }
+
+        $output = apply_filters('babe_admin_confirm_content_html', $output, $args);
+
+        return $output;
     }
 
     public static function customer_order_confirm_page_content( array $args ): string
@@ -3833,6 +3843,10 @@ class BABE_html {
 
         foreach($order_meta as $field_name => $field_content){
 
+            if ( empty($field_content) ){
+                continue;
+            }
+
             if ( $field_name === 'billing_address' ){
 
                 $countries = BABE_Locales::countries();
@@ -4289,12 +4303,18 @@ class BABE_html {
               <button class="babe_button_refresh" onClick="window.location.reload();">'.__('Refresh the page', 'ba-book-everything').'</button>
             </div>';
         }
-        
-        $output .= '<h4>'.sprintf(__('Order #%s', 'ba-book-everything'), $args['order_num']).'</h4>';
-        
-        $output .= self::order_items($order_id);
-        
-        $output .= self::order_customer_details($order_id);
+
+        $order_details = [
+            'order_num' => '<h4>'.sprintf(__('Order #%s', 'ba-book-everything'), $args['order_num']).'</h4>',
+            'order_items' => self::order_items($order_id),
+            'order_customer_details' => self::order_customer_details($order_id),
+        ];
+
+        $order_details = apply_filters('babe_confirm_content_order_details', $order_details, $args);
+
+        if ( !empty($order_details) ){
+            $output .= implode('', $order_details);
+        }
         
         $output = apply_filters('babe_confirm_content_html', $output, $args);
         

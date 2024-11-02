@@ -2822,6 +2822,8 @@ class BABE_CMB2_admin {
                 }
             }
 
+            do_action('cmb2_booking_obj_after_faqs', $cmb, $prefix, $category);
+
         } //// end foreach $all_categories
 
         //////////// Custom sections ////////////////////
